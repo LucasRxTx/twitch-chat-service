@@ -1,0 +1,72 @@
+type Query {
+    """
+    List all messages that have been saved during streaming.
+    """
+    messages: [Message]!  # TODO: add paging
+    """ Query channel metrics """
+    channel(channel: String!): Channel!
+}
+
+""" Channel meta data """
+type Channel {
+    """ Name of the streamer of the channel. """
+    channel: String!
+    """ 
+        Indicates how positive and negative the chat is.
+        The value is between 1 and -1.
+    """
+    chat_sentiment: Float!
+    """ chat_sentiment represented as an emoji. """
+    sentiment_emoji: String!
+    messages_per_minute: Float!
+    """ How many lol, LOL, LUL, or lul apear in chat. """
+    lulz_per_minute: Float!
+}
+
+
+"""
+A message from Twitch IRC.
+"""
+type TwitchMessage {
+    """ The nickname of the message sender  """
+    nickname: String!
+    """ The message body. """
+    body: String!
+    """ A date string string in ISO format with UTC timezone. """
+    created_at: String!
+    """ Channel message was published to """
+    channel: String!
+    """ nickname of account streaming the message """
+    streamed_by: String!
+}
+
+""" Message from our database. """
+type Message {
+    """ The nickname of the message sender  """
+    nickname: String!
+    """ The message body. """
+    body: String!
+    """ A date string string in ISO format with UTC timezone. """
+    created_at: String!
+    """ Channel message was published to """
+    channel: String!
+    """ nickname of account streaming the message """
+    streamed_by: String!
+    has_lul: Boolean!
+    sentiment: Float!
+    sentiment_emoji: String!
+}
+
+type Subscription {
+    """
+    Stream chat from a Twitch IRC Channel.
+    """
+    streamChannel(
+        """ Nickname used to login to Twitch. """
+        nickname: String!,
+        """ OAth2 token from Twitch. """
+        token: String!,
+        """ Name of channel to subscribe. (Do not prefix with `#`). """
+        channel: String!
+    ): TwitchMessage!
+}

@@ -1,0 +1,56 @@
+version: "3"
+services:
+  db:
+    image: mariadb
+    ports: 
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: "twitch"
+      MYSQL_DATABASE: "twitch"
+    command: ["mysqld", "--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+  redis:
+    image: redis
+    ports:
+      - "6379"
+  twitch_chat_service:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      DB_HOST: "host.docker.internal"
+      DB_PORT: 3306
+      DB_USER: "root"
+      DB_PASS: "twitch"
+      DB_DB: "twitch"
+      REDIS_HOST: "redis"
+      REDIS_PORT: 6379
+      REDIS_DB: 0
+      ENV: "development"
+    volumes:
+      # for code reloading
+      - "./:/code"
+    command: ["uvicorn", "--reload", "--host", "0.0.0.0", "twitch_chat_service.__main__:app"]
+    depends_on:
+      - db
+      - redis
+
+  twitch_chat_analytics_service:
+    build: 
+      context: .
+      dockerfile: ./twitch_chat_analytics_service/Dockerfile
+    environment:
+      DB_HOST: "host.docker.internal"
+      DB_PORT: 3306
+      DB_USER: "root"
+      DB_PASS: "twitch"
+      DB_DB: "twitch"
+      REDIS_HOST: "redis"
+      REDIS_PORT: 6379
+      REDIS_DB: 0
+      ENV: "development"
+    volumes:
+      # for code reloading
+      - ".:/code"
+    depends_on:
+      - db
+      - redis

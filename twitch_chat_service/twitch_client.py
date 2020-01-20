@@ -1,0 +1,66 @@
+import asyncio
+import re
+import string
+import json
+import datetime
+import os
+from typing import Iterable, Dict, Any, AsyncGenerator, Optional
+
+
+class TwitchIRCClient:
+    server = 'irc.chat.twitch.tv'
+    port = 6667
+    # For parsing data out of raw string from IRC.
+    re_string = r"^\:(?P<nickname>[a-zA-Z0-9]*)!.*\:(?P<message>.*)$"
+    message_re = re.compile(re_string)
+
+    def __init__(self, nickname: str, token: str, max_buffer: int = 100):
+        self.nickname = nickname.lower()  # Twitch calls this nickname
+        self.token = token  # oauth2 token from Twitch
+        self.max_buffer = max_buffer
+
+        self.reader: Optional[asyncio.StreamReader] = None
+        self.writer: Optional[asyncio.StreamWriter] = None
+
+    async def handle_message(self, msg: str, writer):
+        """ Super basic message handler.
+        
+        Will pong on ping to keep connection alive.
+        Parse nicname """
+        if "PING" in msg:
+            print("< PONG")
+            self.writer.write("PONG :tmi.twitch.tv".encode("utf-8"))
+        # if "PRIVMSG" in msg:
+        if "MSG" in msg:
+            match = self.message_re.match(msg)
+            if match:
+                data = dict(
+                    nickname=match.group(1).strip().lower(),
+                    body=match.group(2).strip(),
+                    created_at=datetime.datetime.now(datetime.timezone.utc)
+                )
+                return data
+
+    async def stream(self, channel) -> AsyncGenerator[Dict[str, Any], None]:
+        print(self.nickname, self.token, channel)
+        self.reader, self.writer = await asyncio.open_connection(
+            self.server,
+            self.port
+        )
+
+        self.writer.write(f"PASS oauth:{self.token}\n".encode("utf-8"))
+        self.writer.write(f"NICK {self.nickname}\n".encode("utf-8"))
+        self.writer.write(f"JOIN #{channel}\n".encode("utf-8"))
+        await self.writer.drain()
+
+        try:
+            while True:
+                msg: bytes = await self.reader.read(self.max_buffer)
+                data: Dict[str, Any] = \
+                    await self.handle_message(msg.decode("utf-8"), channel)
+
+                if data:
+                    yield data
+        except KeyboardInterrupt:
+            self.writer.close()
+            exit()
