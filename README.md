@@ -6,7 +6,7 @@ analysing the results.  Subscription to chat, and querying analytics
 are available through a GraphQL endpoint.
 
 Things you will need:
-- A twitch oauth2 token available from Twitch [here](https://twitchapps.com/tmi/).
+- A twitch oauth2 token available from Twitch [here](https://twitchapps.com/tmi/).  DONOT INCLUDE "oath:" WITH THE TOKEN!
 - A flask oauth service is available at `twitch_cha_service/irc`.  It works but will be moved to a starlette handler.
 
 # to run
@@ -63,9 +63,18 @@ Im having trouble with database connections...
 - Delete the volume for the database and `docker-compose up -d db` to start
 the database from scratch.  `docker-compose up` dependent services seperately
 
+I connect, but no messages are streaming...
+- Is the channel still open?
+- Is you oauth token valid? (DONOT INCLUDE `oath:` with your token)
+- Channel name should not include a `#`
+
 # Known issues
 Websocket connection can be flaky.  Does not end connections properly sometimes.
-Multiple subscriptions has not been tested or attempted 😱 (Does it work?)
+Multiple subscriptions has not been tested or attempted 😱 (Does it work?).
+Can another user see your stream?!? 🙀
+
+If your auth token expires, or is invalid it will look like you have
+connected but nothing will happen.
 
 # Repos used as reference
 During development I used a few repositories to learn how to use websockets
