@@ -1,0 +1,6 @@
+infrastructure/
+README.md
+docker-compose.yml
+venv/
+.vscode
+.mypy_cache
