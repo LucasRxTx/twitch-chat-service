@@ -1,14 +1,13 @@
 import requests
 import flask
 import json
+import os
 
-client_id = "bnop6ookd21nabwmrovk5xnmwtk0wx"
-client_secret = "s38uibp6ubgsetkn4jdy7pp9e6icl0"
+client_id = os.environ["TWITCH_CLIENT_ID"]
+client_secret = os.environ["TWITCH_CLIENT_SECRET"]
 
 server = 'irc.chat.twitch.tv'
 port = 6667
-nickname = 'lucasrxtx'
-channel = '#ninja'
 
 
 def get_auth_token(code):
