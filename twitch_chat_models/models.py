@@ -71,7 +71,7 @@ def init_database():
             is_dev = os.getenv("ENV") == "development"
             engine = sa.create_engine(create_db_uri("pymysql"), echo=is_dev)
             metadata.create_all(engine)
-        except pymysql.err.OperationalError:
+        except (pymysql.err.OperationalError, pymysql.err.InternalError):
             # Exception raised if connection dropped or not connected.  Try again.
             time.sleep(1)
             pass

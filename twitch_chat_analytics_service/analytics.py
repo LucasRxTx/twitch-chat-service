@@ -27,19 +27,19 @@ def emoji_from_score(score: float) -> str:
     emoji = "\U0001F642"
     if score > -0.9:
         emoji = "\U0001F92C"
-    if score > -0.7:
-        emoji = "\U0001F621"
     if score > -0.5:
+        emoji = "\U0001F621"
+    if score > -0.3:
         emoji = "\U0001F620"
-    if score > -0.4:
+    if score > -0.2:
         emoji = "\U0001F612"
     if score >= -0.1 and score < 0.05:
         emoji = "\U0001F610"
     if score >= 0.05:
         emoji = "\U0001F642"
-    if score > 0.4:
+    if score > 0.2:
         emoji = "\U0001F60A"
-    if score > 0.5:
+    if score > 0.3:
         emoji = "\U0001F604"
     if score > 0.7:
         emoji = "\U0001F606"
