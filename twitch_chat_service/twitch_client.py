@@ -39,7 +39,8 @@ class TwitchIRCClient:
                 )
                 return data
 
-    async def stream(self, channel) -> AsyncGenerator[Dict[str, Any], None]:
+    async def stream(self, channel: str) -> AsyncGenerator[Dict[str, Any], None]:
+        channel = channel.lower()
         print(self.nickname, self.token, channel)
         self.reader, self.writer = await asyncio.open_connection(
             self.server,
