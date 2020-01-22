@@ -13,3 +13,4 @@ pylama
 mypy
 aredis
 emoji
+requests
