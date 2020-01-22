@@ -1,10 +1,7 @@
 import asyncio
 import re
-import string
-import json
 import datetime
-import os
-from typing import Iterable, Dict, Any, AsyncGenerator, Optional
+from typing import Dict, Any, AsyncGenerator, Optional
 
 
 class TwitchIRCClient:
@@ -24,12 +21,13 @@ class TwitchIRCClient:
 
     async def handle_message(self, msg: str, writer):
         """ Super basic message handler.
-        
+
         Will pong on ping to keep connection alive.
         Parse nicname """
         if "PING" in msg:
             print("< PONG")
-            self.writer.write("PONG :tmi.twitch.tv".encode("utf-8"))
+            if self.writer is not None:
+                self.writer.write("PONG :tmi.twitch.tv".encode("utf-8"))
         # if "PRIVMSG" in msg:
         if "MSG" in msg:
             match = self.message_re.match(msg)

@@ -1,7 +1,6 @@
 import json
 import graphql
 from graphql.execution.execute import ExecutionResult
-from graphql.subscription.map_async_iterator import MapAsyncIterator
 from twitch_chat_service.graphql_constants import GQLEnum
 from typing import Optional, Union, AsyncIterator, Callable, Dict
 

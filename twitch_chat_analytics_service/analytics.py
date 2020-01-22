@@ -1,15 +1,9 @@
 import datetime
 import json
-import nltk
-import aredis
-from emoji import demojize, emojize
-from typing import Iterable, List, Sequence
-from nltk.corpus import stopwords
+from emoji import demojize
+from typing import Sequence
 from textblob import TextBlob
-from textblob.classifiers import NaiveBayesClassifier
 from twitch_chat_models.models import database, redis, messages
-
-nltk.download('stopwords')
 
 
 def average(values: Sequence[float]) -> float:
@@ -20,6 +14,7 @@ def average(values: Sequence[float]) -> float:
         values_summed = [value for value in values if value is not 0.0]
         average_value = sum(values_summed) / len(values)    
     return average_value
+
 
 def emoji_from_score(score: float) -> str:
     """ Represent a float between 1.0 and -1.0 as an emoji. """
@@ -53,7 +48,7 @@ def analyze_sentiment(msg: str) -> float:
     scores = []
     for sentence in blob.sentences:
         scores.append(sentence.polarity)
-    
+
     score_average: float = average(scores)
     return score_average
 
@@ -68,7 +63,6 @@ async def handle_twitch_message_create(message: dict):
 
     data["created_at"] = datetime.datetime.fromisoformat(data["created_at"])
     sentiment: float = analyze_sentiment(msg=data["body"])
-    sentiment_emoji: str = emoji_from_score(sentiment)
     data["body"] = demojize(data["body"])
     data["sentiment"] = sentiment
     data["sentiment_emoji"] = demojize(emoji_from_score(sentiment))

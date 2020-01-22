@@ -58,13 +58,15 @@ channels = sa.Table(
     sa.Column("emoji", sa.Unicode(10), default="\U0001F610")
 )
 
+
 #
 # Create tables if none exsists
 #
 def init_database():
+    max_reties = 5
     connected = False
     while not connected:
-        # Database may not be available, loop untill connection can be established.
+        # Database may not be available, loop untill connected or max retires.
         try:
             # Create tables with syncronous pymysql
             # because `await` not available outside of function.
@@ -72,11 +74,15 @@ def init_database():
             engine = sa.create_engine(create_db_uri("pymysql"), echo=is_dev)
             metadata.create_all(engine)
         except (pymysql.err.OperationalError, pymysql.err.InternalError):
-            # Exception raised if connection dropped or not connected.  Try again.
+            max_reties -= 1
+            if max_reties <= 0:
+                raise RuntimeError("Unable to connect to database.")
+
             time.sleep(1)
             pass
         else:
             connected = True
+
 
 # Use aiomysql for everything elese.
 database = databases.Database(create_db_uri("aiomysql"))

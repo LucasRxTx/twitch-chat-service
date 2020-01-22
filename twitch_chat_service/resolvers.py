@@ -49,12 +49,11 @@ async def resolve_messages(_, info) -> List[Dict[str, Any]]:
 async def resolve_channels(_, info, channel: str) -> Dict[str, Any]:
     channel_lowered: str = channel.lower()
 
-    row: Optional[Mapping] = await database.fetch_one(
+    row: Mapping = await database.fetch_one(
         query=channel_metrics_query,
         values=dict(channel=channel_lowered)
     )
 
-    print(row)
     sentiment: float = row["chat_sentiment"] if row["chat_sentiment"] else 0.0
     data = dict(
         channel=channel_lowered,
@@ -63,8 +62,9 @@ async def resolve_channels(_, info, channel: str) -> Dict[str, Any]:
         lulz_per_minute=row["lulz_per_minute"],
         sentiment_emoji=emojize(emoji_from_score(sentiment))
     )
-    
+
     return data
+
 
 @subscription.source("streamChannel")
 async def message_generator(
@@ -81,6 +81,7 @@ async def message_generator(
         msg["channel"] = channel
         await redis.publish(f"TwitchMessageCreated", json.dumps(msg))
         yield msg
+
 
 @subscription.field("streamChannel")
 async def resolve_stream_channel(msg, info, nickname, token, channel):
