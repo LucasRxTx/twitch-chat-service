@@ -6,7 +6,7 @@ from ariadne import (
     load_schema_from_path,
     SubscriptionType
 )
-from typing import List, AsyncGenerator, Dict, Any, Mapping
+from typing import List, AsyncGenerator, Dict, Any, Mapping, Optional
 from twitch_chat_models.models import (
     database,
     messages,
@@ -14,7 +14,7 @@ from twitch_chat_models.models import (
     channel_metrics_query
 )
 from twitch_chat_service.twitch_client import TwitchIRCClient
-from twitch_chat_analytics_service.analytics import emoji_from_score
+from twitch_chat_consumer.analytics import emoji_from_score
 
 
 type_defs = load_schema_from_path("twitch_chat_service/graphql/types.graphql")
@@ -49,21 +49,27 @@ async def resolve_messages(_, info) -> List[Dict[str, Any]]:
 async def resolve_channels(_, info, channel: str) -> Dict[str, Any]:
     channel_lowered: str = channel.lower()
 
-    row: Mapping = await database.fetch_one(
+    row: Optional[Mapping] = await database.fetch_one(
         query=channel_metrics_query,
         values=dict(channel=channel_lowered)
     )
 
-    sentiment: float = row["chat_sentiment"] if row["chat_sentiment"] else 0.0
-    data = dict(
-        channel=channel_lowered,
-        chat_sentiment=sentiment,
-        messages_per_minute=row["messages_per_minute"],
-        lulz_per_minute=row["lulz_per_minute"],
-        sentiment_emoji=emojize(emoji_from_score(sentiment))
-    )
+    if row is not None:
+        sentiment: float = \
+            row["chat_sentiment"] if row["chat_sentiment"] else 0.0
 
-    return data
+        data = dict(
+            channel=channel_lowered,
+            chat_sentiment=sentiment,
+            messages_per_minute=row["messages_per_minute"],
+            lulz_per_minute=row["lulz_per_minute"],
+            sentiment_emoji=emojize(emoji_from_score(sentiment))
+        )
+
+        return data
+    else:
+        # TODO: find out how to return "NotFound" errors in graphql
+        return dict()
 
 
 @subscription.source("streamChannel")

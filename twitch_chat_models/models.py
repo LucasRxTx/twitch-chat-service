@@ -7,7 +7,7 @@ import time
 # from aiomysql.sa import create_engine
 from typing import Optional
 from aredis import StrictRedis
-from sqlalchemy import event
+
 
 with open("./twitch_chat_models/sql/channel_metrics.sql", "r") as f:
     channel_metrics_query = f.read()
@@ -59,30 +59,43 @@ channels = sa.Table(
 )
 
 
-#
-# Create tables if none exsists
-#
-def init_database():
-    max_reties = 5
+def ensure_db_connection():
+    max_reties = os.getenv("DB_CONNECT_RETRIES", 10)
     connected = False
     while not connected:
         # Database may not be available, loop untill connected or max retires.
         try:
             # Create tables with syncronous pymysql
             # because `await` not available outside of function.
-            is_dev = os.getenv("ENV") == "development"
-            engine = sa.create_engine(create_db_uri("pymysql"), echo=is_dev)
-            metadata.create_all(engine)
-        except (pymysql.err.OperationalError, pymysql.err.InternalError):
+            connection = pymysql.connect(
+                host=os.environ["DB_HOST"],
+                user=os.environ["DB_USER"],
+                password=os.environ["DB_PASS"],
+                db=os.environ["DB_DB"],
+                charset='utf8mb4',
+            )
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT 1=1")
+        except Exception:
             max_reties -= 1
             if max_reties <= 0:
                 raise RuntimeError("Unable to connect to database.")
 
-            time.sleep(1)
+            time.sleep(5)
             pass
         else:
             connected = True
 
+
+#
+# Create tables if none exsists
+#
+def init_database():
+    ensure_db_connection()
+
+    is_dev = os.getenv("ENV") == "development"
+    engine = sa.create_engine(create_db_uri("pymysql"), echo=is_dev)
+    metadata.create_all(engine)
 
 # Use aiomysql for everything elese.
 database = databases.Database(create_db_uri("aiomysql"))

@@ -79,8 +79,9 @@ async def handle_message_stream():
     await database.connect()
     try:
         while True:
-            message: dict = await p.get_message()
-            if message:
+            # TODO: p.get_message returning `1` on successful connection.  Why?
+            message: Union[int, dict] = await p.get_message()
+            if isinstance(message, dict):
                 await handle_twitch_message_create(message)
     except KeyboardInterrupt:
         await database.disconnect()

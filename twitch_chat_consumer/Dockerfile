@@ -9,4 +9,4 @@ COPY . /code
 WORKDIR /code
 
 #TODO: Should run as unprivlaged user
-CMD ["python", "-m", "twitch_chat_analytics_service"]
+CMD ["python", "-m", "twitch_chat_consumer"]
