@@ -13,6 +13,14 @@ client_id = os.environ["TWITCH_CLIENT_ID"]
 client_secret = os.environ["TWITCH_CLIENT_SECRET"]
 
 
+async def index_page(request):
+    return HTMLResponse(
+        """
+        <a href="http://localhost:8000/graphql">GraphQL Playground</a><br>
+        <a href="http://localhost:8000/auth">Twitch Token</a>
+        """, 200)
+
+
 async def get_auth_token(code):
     url = "https://id.twitch.tv/oauth2/token"
     params = dict(
@@ -79,9 +87,10 @@ async def websocket_route(websocket):
 
 # Graphql playground available at http://0.0.0.0:8000/
 routes = [
+    Route("/", endpoint=index_page),
     Route("/auth", endpoint=auth),
     Route("/auth/redirect", endpoint=auth_redirect),
-    Route("/", endpoint=GraphQL(schema, debug=True)),
+    Route("/graphql", endpoint=GraphQL(schema, debug=True)),
     WebSocketRoute("/", endpoint=websocket_route)
 ]
 

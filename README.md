@@ -7,20 +7,12 @@ are available through a GraphQL endpoint.
 
 Things you will need:
 - A twitch oauth2 token available from Twitch [here](https://twitchapps.com/tmi/).  DONOT INCLUDE "oath:" WITH THE TOKEN!
+- Or at http://localhost:8000/auth
 - A flask oauth service is available at `twitch_cha_service/irc`.  It works but will be moved to a starlette handler.
 
 # to run
 
-```docker-compose up -d db && docker-compose up -d redis```
-
-then:
-
-```docker-compose up```
-
-Later iterations will allow just `docker-compose up` for inital runs.  Currently
-the database has to make tables before accepting connections.  If running every
-thing together, connections will fail due to the database not being ready for
-connections.
+```docker-compose up ```
 
 
 The graphql playground is available at:
@@ -64,7 +56,7 @@ Im having trouble with database connections...
 the database from scratch.  `docker-compose up` dependent services seperately
 
 I connect, but no messages are streaming...
-- Is the channel still open?
+- Is the channel still streaming on Twitch??
 - Is you oauth token valid? (DONOT INCLUDE `oath:` with your token)
 - Channel name should not include a `#`
 
