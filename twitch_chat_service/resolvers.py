@@ -1,18 +1,18 @@
-import asyncio
 import json
-import sqlalchemy as sa
-from emoji import demojize, emojize
-from datetime import datetime, timezone
-from sqlalchemy.sql import select, and_
+from emoji import emojize
 from ariadne import (
     QueryType,
     make_executable_schema,
     load_schema_from_path,
-    MutationType,
     SubscriptionType
 )
-from typing import List, Optional, AsyncGenerator, Dict, Any, Mapping
-from twitch_chat_models.models import database, messages, redis, channel_metrics_query
+from typing import List, AsyncGenerator, Dict, Any, Mapping
+from twitch_chat_models.models import (
+    database,
+    messages,
+    redis,
+    channel_metrics_query
+)
 from twitch_chat_service.twitch_client import TwitchIRCClient
 from twitch_chat_analytics_service.analytics import emoji_from_score
 

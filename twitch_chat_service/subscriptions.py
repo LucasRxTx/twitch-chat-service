@@ -93,7 +93,6 @@ class TwitchGQLSubscription:
     async def stream_channel(self, results, operation_id):
         async for result in results:
             resp = dict()
-            print("result:", result)
             if result and result.data:
                 resp = dict(
                     type=GQLEnum.DATA.value,
@@ -104,7 +103,6 @@ class TwitchGQLSubscription:
                 resp = dict(
                     errors=[graphql.format_error(e) for e in result.errors]
                 )
-            print("payload", resp)
             json_response: str = json.dumps(dict(
                 type=GQLEnum.DATA.value,
                 id=operation_id,
