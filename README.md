@@ -7,8 +7,6 @@ are available through a GraphQL endpoint.
 
 Things you will need:
 - A twitch oauth2 token available from Twitch [here](https://twitchapps.com/tmi/).  DONOT INCLUDE "oath:" WITH THE TOKEN!
-- Or at http://localhost:8000/auth
-- A flask oauth service is available at `twitch_cha_service/irc`.  It works but will be moved to a starlette handler.
 
 # to run
 
@@ -69,9 +67,6 @@ If your auth token expires, or is invalid it will look like you have
 connected but nothing will happen.
 
 # Repos used as reference
-During development I used a few repositories to learn how to use websockets
-with Starlette and GraphQL.  You can view them here to see how I took
-reference material, learned from it, improved it and made it my own.
 
 - [patrys](https://github.com/patrys/starlette-ariadne/tree/31d9354b26f03c4ef7af19ca0f97d5f859059282)
 - [fgshun](https://gist.github.com/fgshun/fe96c21b2de743a88778e4f729510190)
