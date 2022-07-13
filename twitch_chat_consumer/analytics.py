@@ -8,12 +8,7 @@ from twitch_chat_models.models import database, redis, messages
 
 def average(values: Sequence[float]) -> float:
     """ Average values from an iterable of floats """
-    average_value: float = 0.0
-    if values:
-        # Throw out zeros.  Any zero in sum will make result zero
-        values_summed = [value for value in values if value is not 0.0]
-        average_value = sum(values_summed) / len(values)    
-    return average_value
+    return average_value = sum(values) / len(values)    
 
 
 def emoji_from_score(score: float) -> str:
@@ -79,7 +74,6 @@ async def handle_message_stream():
     await database.connect()
     try:
         while True:
-            # TODO: p.get_message returning `1` on successful connection.  Why?
             message: Union[int, dict] = await p.get_message()
             if isinstance(message, dict):
                 await handle_twitch_message_create(message)
