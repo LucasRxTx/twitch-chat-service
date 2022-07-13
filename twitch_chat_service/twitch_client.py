@@ -20,16 +20,15 @@ class TwitchIRCClient:
         self.writer: Optional[asyncio.StreamWriter] = None
 
     async def handle_message(self, msg: str, writer):
-        """ Super basic message handler.
+        """ Basic message handler.
 
         Will pong on ping to keep connection alive.
-        Parse nicname """
+        """
         if "PING" in msg:
             print("< PONG")
             if self.writer is not None:
                 self.writer.write("PONG :tmi.twitch.tv".encode("utf-8"))
-        # if "PRIVMSG" in msg:
-        if "MSG" in msg:
+        elif "MSG" in msg:
             match = self.message_re.match(msg)
             if match:
                 data = dict(
