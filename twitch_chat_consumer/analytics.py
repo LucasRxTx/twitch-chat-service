@@ -1,14 +1,14 @@
 import datetime
 import json
 from emoji import demojize
-from typing import Sequence
+from typing import Sequence, Union
 from textblob import TextBlob
 from twitch_chat_models.models import database, redis, messages
 
 
 def average(values: Sequence[float]) -> float:
     """ Average values from an iterable of floats """
-    return average_value = sum(values) / len(values)    
+    return sum(values) / len(values)    
 
 
 def emoji_from_score(score: float) -> str:
