@@ -57,7 +57,7 @@ async def handle_twitch_message_create(message: dict):
         return None
 
     data["created_at"] = datetime.datetime.fromisoformat(data["created_at"])
-    sentiment: float = analyze_sentiment(msg=data["body"])
+    sentiment = analyze_sentiment(msg=data["body"])
     data["body"] = demojize(data["body"])
     data["sentiment"] = sentiment
     data["sentiment_emoji"] = demojize(emoji_from_score(sentiment))
