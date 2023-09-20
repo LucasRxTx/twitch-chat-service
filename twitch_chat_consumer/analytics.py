@@ -1,18 +1,22 @@
 import datetime
 import json
+import logging
 from emoji import demojize
 from typing import Sequence, Union
 from textblob import TextBlob
 from twitch_chat_models.models import database, redis, messages
 
 
+logger = logging.getLogger(__name__)
+
+
 def average(values: Sequence[float]) -> float:
-    """ Average values from an iterable of floats """
-    return sum(values) / len(values)    
+    """Average values from an iterable of floats."""
+    return sum(values) / len(values)
 
 
 def emoji_from_score(score: float) -> str:
-    """ Represent a float between 1.0 and -1.0 as an emoji. """
+    """Represent a float between 1.0 and -1.0 as an emoji."""
     # TODO: tweek logic
     emoji = "\U0001F642"
     if score > -0.9:
@@ -38,22 +42,18 @@ def emoji_from_score(score: float) -> str:
 
 
 def analyze_sentiment(msg: str) -> float:
-    """ Perform basic sentiment analysis on any text. """
+    """Perform basic sentiment analysis on any text."""
     blob = TextBlob(msg)
-    scores = []
-    for sentence in blob.sentences:
-        scores.append(sentence.polarity)
-
-    score_average: float = average(scores)
-    return score_average
+    scores = [sentence.polarity for sentence in blob.sentences]
+    return average(scores)
 
 
 async def handle_twitch_message_create(message: dict):
     try:
-        print(message["data"])
+        logger.info(message["data"])
         data: dict = json.loads(message["data"].decode("utf-8"))
     except Exception as e:
-        print(e)
+        logger.exception("Error creating twitch message.")
         return None
 
     data["created_at"] = datetime.datetime.fromisoformat(data["created_at"])
