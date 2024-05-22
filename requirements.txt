@@ -1,6 +1,6 @@
 # TODO: break this into seperate files for dev and production dependencies.
 # TODO: pin versions
-pymysql==0.9.2
+pymysql==1.1.1
 aiomysql
 databases[mysql]
 textblob
